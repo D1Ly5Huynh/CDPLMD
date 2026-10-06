@@ -1,0 +1,113 @@
+{
+  "preset": "paper",
+  "source": "paper25k",
+  "n_features": 3523,
+  "n_train": 34000,
+  "n_test": 1000,
+  "n_eval": 500,
+  "gan_last_evade_batch": 1.0,
+  "dqn_evade_last20": 0.0,
+  "mutate_evade": 0.072,
+  "mean_turns": 47.76,
+  "table4": {
+    "RandomForest": {
+      "ODR": 0.992,
+      "ADR": 0.928,
+      "AUC": 0.9997572520833333
+    },
+    "GradientBoosting": {
+      "ODR": 0.98,
+      "ADR": 0.97,
+      "AUC": 0.9983978770833333
+    },
+    "MLP": {
+      "ODR": 0.992,
+      "ADR": 0.976,
+      "AUC": 0.9995127354166666
+    },
+    "DecisionTree": {
+      "ODR": 0.992,
+      "ADR": 0.96,
+      "AUC": 0.9998254270833334
+    }
+  },
+  "table5": {
+    "RandomForest": {
+      "ADR_before": 0.928,
+      "ADR_after": 0.98
+    },
+    "GradientBoosting": {
+      "ADR_before": 0.97,
+      "ADR_after": 0.954
+    },
+    "MLP": {
+      "ADR_before": 0.976,
+      "ADR_after": 0.99
+    },
+    "DecisionTree": {
+      "ADR_before": 0.96,
+      "ADR_after": 0.984
+    }
+  },
+  "table6": {
+    "status": "ready_lookup",
+    "n_eval_hashes": 500,
+    "n_local_pe": 0,
+    "n_engines_paper": 61,
+    "cmd": "python scripts/vt_table67.py --eval-n 500"
+  },
+  "table7": {
+    "status": "need_adversarial_pe",
+    "reason": "Eq. (4) needs orig vs mutated PE on VirusTotal. Hash lookup of originals: scripts/vt_table67.py. Upload mutants when PE files exist under data/pe/malware/."
+  },
+  "config": {
+    "name": "paper",
+    "seed": 42,
+    "n_imports": 3269,
+    "n_sections": 254,
+    "n_malware": 25000,
+    "n_benign": 10000,
+    "n_test_malware": 1000,
+    "gan_hidden": 256,
+    "gan_noise": 10,
+    "gan_epochs": 100,
+    "gan_batch": 32,
+    "gan_lr": 0.001,
+    "leaky": 0.2,
+    "dqn_h1": 256,
+    "dqn_h2": 64,
+    "gamma": 0.98,
+    "episodes": 500,
+    "max_turn": 50,
+    "dqn_lr": 0.001,
+    "epsilon_start": 1.0,
+    "epsilon_end": 0.05,
+    "buffer_size": 8000,
+    "dqn_batch": 64,
+    "warmup": 256,
+    "target_sync": 40,
+    "threshold": 0.8,
+    "eval_n": 500,
+    "retrain_frac": 0.5,
+    "mlp_hidden": 100,
+    "mlp_max_iter": 150,
+    "mlp_batch": 50,
+    "mlp_lr": 0.0003,
+    "cuckoo_enabled": true,
+    "cuckoo_url": "http://127.0.0.1:8090",
+    "cuckoo_timeout": 20,
+    "vt_enabled": true,
+    "vt_n_engines": 61,
+    "vt_rate_sleep": 15.0,
+    "out_dir": "C:\\Users\\tuonghk\\CDPLMD\\results",
+    "model_dir": "C:\\Users\\tuonghk\\CDPLMD\\models",
+    "n_features": 3523,
+    "n_actions": 7
+  },
+  "cuckoo": {
+    "api": "http://127.0.0.1:8090",
+    "status": "cli",
+    "cli": "Usage: cuckoo [OPTIONS] [COMMAND] [ARGS]...\n\nOptions:\n  --cwd TEXT          Cuckoo Working Directory\n  --distributed       Start Cuckoo in distributed mode\n  -v, --verbose       Enable debug logging, ",
+    "note": "Paper \u00a7IV: keep mutant iff Cuckoo signatures match the parent."
+  }
+}

@@ -1,0 +1,49 @@
+# Secrets
+data/vt.api
+data/cuckoo/api.token
+data/cuckoo/vt.api
+*.token
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Trained models
+models/*.joblib
+
+# Large / local datasets (EMBER tarballs, VirusShare catalogs, jsonl dumps)
+data/sources/ember/
+data/sources/maldict/
+data/sources/virusshare/
+data/paper25k/*.jsonl
+data/paper25k/*.npz
+data/paper25k/*ember*
+data/paper25k/*virusshare*
+
+# Local PE / smoke binaries
+data/pe/malware/
+data/pe/benign/
+data/cuckoo/smoke/
+data/cuckoo/work/
+*.exe
+*.dll
+*.bin
+*.iso
+*.qcow2
+
+# Logs and parse stamps
+*.log
+*.parsed
+
+# Large experiment artifacts
+results/*.npy
+results/vt_original_reports.json
+results/vt_original_reports.jsonl
+
+# IEEE paper PDF (copyrighted; cite DOI instead)
+A_Deep_Reinforcement_Learning_Framework*.pdf

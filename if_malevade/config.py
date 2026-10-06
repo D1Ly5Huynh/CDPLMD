@@ -1,0 +1,69 @@
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+from pathlib import Path
+
+
+@dataclass
+class Config:
+    """Hyper-parameters from IF-MalEvade (IEEE Access 2023) §III–IV."""
+
+    name: str = "paper"
+    seed: int = 42
+    n_imports: int = 3269
+    n_sections: int = 254
+    n_malware: int = 25000
+    n_benign: int = 10000
+    n_test_malware: int = 1000
+    gan_hidden: int = 256
+    gan_noise: int = 10
+    gan_epochs: int = 100
+    gan_batch: int = 32
+    gan_lr: float = 1e-3
+    leaky: float = 0.2
+    dqn_h1: int = 256
+    dqn_h2: int = 64
+    gamma: float = 0.98
+    episodes: int = 500
+    max_turn: int = 50
+    dqn_lr: float = 1e-3
+    epsilon_start: float = 1.0
+    epsilon_end: float = 0.05
+    buffer_size: int = 8000
+    dqn_batch: int = 64
+    warmup: int = 256
+    target_sync: int = 40
+    threshold: float = 0.8
+    eval_n: int = 500
+    retrain_frac: float = 0.5
+    mlp_hidden: int = 100
+    mlp_max_iter: int = 150
+    mlp_batch: int = 50
+    mlp_lr: float = 3e-4
+    cuckoo_enabled: bool = True
+    cuckoo_url: str = "http://127.0.0.1:8090"
+    cuckoo_timeout: int = 20
+    vt_enabled: bool = True
+    vt_n_engines: int = 61
+    vt_rate_sleep: float = 15.0
+    out_dir: str = "results"
+    model_dir: str = "models"
+
+    @property
+    def n_features(self) -> int:
+        return self.n_imports + self.n_sections
+
+    @property
+    def n_actions(self) -> int:
+        return 7
+
+    def to_dict(self) -> dict:
+        d = asdict(self)
+        d["n_features"] = self.n_features
+        d["n_actions"] = self.n_actions
+        return d
+
+    def resolve(self, root: Path) -> "Config":
+        self.out_dir = str(root / self.out_dir)
+        self.model_dir = str(root / self.model_dir)
+        return self
