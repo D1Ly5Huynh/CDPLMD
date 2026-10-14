@@ -12,6 +12,14 @@ python run_experiment.py
 
 Hyperparameter: GAN 100 epoch, DQN 500 episode, eval 500, test 1000 malware / 0 benign (Table 2).
 
+## So sánh lab và paper
+
+Lần chạy đã chốt dùng corpus Dike (50 cặp, 75 engine VirusTotal). Paper dùng VirusShare (500 cặp, 61 engine). Hai cột không gộp.
+
+![Biểu đồ cột nhóm: ADR Table 4, detection Table 6 và evasion Table 7. Cột xanh là paper, cột cam gạch chéo là lab. Trục từ 0 đến 100 phần trăm.](docs/lab-vs-paper.png)
+
+Bảng đủ min–max, ADR local và 41/50 cặp Cuckoo: [IF-MalEvade-so-sanh-lab-va-paper.md](IF-MalEvade-so-sanh-lab-va-paper.md). Số trên hình là trung bình, lấy từ `results/dike2500/summary.json` và `results/dike2500/baselines.json`. Vẽ lại bằng `python scripts/plot_lab_vs_paper.py`.
+
 Kết quả: `results/summary.json`, `table4_ml_detectors.csv`, `table5_adversarial_retrain.csv`.
 
 Table 6–7 (VirusTotal, N=61): cần `VT_API_KEY` (hoặc `data/vt.api`). Mẫu gốc = hash lookup SHA-256, không upload binary. Mẫu mutate = upload PE khi có file trong `data/pe/malware/`.
