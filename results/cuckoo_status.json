@@ -1,6 +1,0 @@
-{
-  "api": "http://127.0.0.1:8090",
-  "status": "cli",
-  "cli": "Usage: cuckoo [OPTIONS] [COMMAND] [ARGS]...\n\nOptions:\n  --cwd TEXT          Cuckoo Working Directory\n  --distributed       Start Cuckoo in distributed mode\n  -v, --verbose       Enable debug logging, ",
-  "note": "Paper \u00a7IV: keep mutant iff Cuckoo signatures match the parent."
-}

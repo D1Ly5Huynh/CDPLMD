@@ -1,0 +1,11 @@
+{
+  "api": "http://127.0.0.1:8090",
+  "status": "online",
+  "probe": "/submit/platforms",
+  "http_status": 200,
+  "body_keys": [
+    "http_status",
+    "windows"
+  ],
+  "note": "Paper \u00a7IV: keep mutant iff Cuckoo signatures match the parent."
+}

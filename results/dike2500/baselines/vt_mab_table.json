@@ -1,0 +1,41 @@
+{
+  "table6": {
+    "n_engines_paper": 61,
+    "n_original_ok": 50,
+    "detection_rate_original": {
+      "min": 0.6533333333333333,
+      "max": 0.8947368421052632,
+      "mean": 0.8226270679213
+    },
+    "detection_rate_original_paper_N61": {
+      "min": 0.8032786885245902,
+      "max": 1.1475409836065573,
+      "mean": 1.0245901639344261
+    },
+    "detection_rate_adversarial": {
+      "min": 0.41333333333333333,
+      "max": 0.8133333333333334,
+      "mean": 0.6578666666666666
+    },
+    "detection_rate_adversarial_paper_N61": {
+      "min": 0.5081967213114754,
+      "max": 1.0,
+      "mean": 0.8088524590163935
+    }
+  },
+  "table7": {
+    "status": "done",
+    "evasion_rate": {
+      "min": 0.0,
+      "max": 0.5147058823529411,
+      "mean": 0.21187377579371625
+    },
+    "n_pairs": 50,
+    "n_engines_paper": 61,
+    "n_engines_observed": {
+      "min": 75.0,
+      "max": 75.0,
+      "mean": 75.0
+    }
+  }
+}

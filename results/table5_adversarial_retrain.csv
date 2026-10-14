@@ -1,5 +1,0 @@
-,ADR_before,ADR_after
-RandomForest,0.928,0.98
-GradientBoosting,0.97,0.954
-MLP,0.976,0.99
-DecisionTree,0.96,0.984

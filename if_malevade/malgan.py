@@ -34,6 +34,7 @@ class MalGAN:
             leaky=cfg.leaky,
             lr=cfg.gan_lr,
             seed=seed,
+            out_bias=cfg.gan_out_bias,
         )
         self.D = MLP(
             [d, cfg.gan_hidden, 1],
@@ -52,14 +53,14 @@ class MalGAN:
     def train(self, blackbox, X: np.ndarray, y: np.ndarray, rng: np.random.Generator) -> dict:
         mal, ben = split_malware(X, y)
         cfg = self.cfg
-        hist = {"g_loss": [], "d_loss": [], "evade_batch": []}
+        hist = {"g_loss": [], "d_loss": [], "evade_batch": [], "mean_added": []}
         steps = max(1, int(np.ceil(len(mal) / cfg.gan_batch)))
         for epoch in tqdm(range(cfg.gan_epochs), desc="MalGAN"):
             perm = rng.permutation(len(mal))
-            g_acc, d_acc, ev_acc, n = 0.0, 0.0, 0.0, 0
+            g_acc, d_acc, ev_acc, add_acc, n = 0.0, 0.0, 0.0, 0.0, 0
             for s in range(steps):
                 sl = perm[s * cfg.gan_batch : (s + 1) * cfg.gan_batch]
-                if len(sl) < 4:
+                if len(sl) < 1:
                     continue
                 m = mal[sl]
                 b = ben[rng.integers(0, len(ben), size=len(m))]
@@ -80,16 +81,24 @@ class MalGAN:
                 eps = 1e-6
                 dL_dD = (1.0 / np.clip(1.0 - d_on_g, eps, None)) / len(m_soft)
                 dL_dx = self.D.backward(dL_dD, d_g_cache, freeze=True)
-                dL_dg = dL_dx * (1.0 - m)
+                # Only bits that were off can change. Sparsity pushes those toward 0
+                # so a flooded OR is not a free evasion.
+                new_bits = 1.0 - m
+                dL_dg = dL_dx * new_bits
+                if cfg.gan_sparsity > 0:
+                    dL_dg = dL_dg + (cfg.gan_sparsity * new_bits) / g_out.size
                 self.G.backward(dL_dg, g_cache)
 
+                added = ((g_out >= 0.5) & (m < 0.5)).sum(axis=1)
                 g_acc += float(np.mean(-np.log(np.clip(1.0 - d_on_g, eps, 1.0))))
                 d_acc += d_loss
                 ev_acc += float(1.0 - yb[len(m) :].mean())
+                add_acc += float(added.mean())
                 n += 1
             hist["g_loss"].append(g_acc / max(n, 1))
             hist["d_loss"].append(d_acc / max(n, 1))
             hist["evade_batch"].append(ev_acc / max(n, 1))
+            hist["mean_added"].append(add_acc / max(n, 1))
         return hist
 
     def influential_pools(
@@ -102,12 +111,15 @@ class MalGAN:
     ) -> dict:
         adv = self.generate(malware, rng, hard=True)
         ok = ~is_malware(blackbox, adv, cfg.threshold)
-        if ok.any():
-            added = (adv[ok] > 0.5) & (malware[ok] < 0.5)
+        added_all = (adv > 0.5) & (malware < 0.5)
+        counts = added_all.sum(axis=1)
+        # A sample that flips hundreds of bits did not find influential features.
+        sparse = ok & (counts <= cfg.gan_max_added)
+        if sparse.any():
+            added = added_all[sparse]
             freq = added.mean(axis=0)
-            mean_added = float(added.sum(axis=1).mean())
+            mean_added = float(counts[sparse].mean())
         else:
-            added = np.zeros((0, malware.shape[1]), dtype=bool)
             freq = np.zeros(malware.shape[1], dtype=np.float32)
             mean_added = 0.0
         n_imp = cfg.n_imports
@@ -124,6 +136,8 @@ class MalGAN:
             "imports": imports,
             "sections": sections,
             "freq": freq,
-            "success_rate": float(ok.mean()),
+            "success_rate": float(ok.mean()) if len(ok) else 0.0,
+            "sparse_success_rate": float(sparse.mean()) if len(sparse) else 0.0,
             "mean_added": mean_added,
+            "mean_added_all": float(counts[ok].mean()) if ok.any() else 0.0,
         }

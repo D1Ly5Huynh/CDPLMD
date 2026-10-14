@@ -24,6 +24,60 @@ from urllib.request import Request, urlopen
 VT_API = "https://www.virustotal.com/api/v3"
 
 
+def select_eval_hashes(
+    sha: list[str],
+    eval_n: int | None,
+    meta_eval_n: int | None,
+) -> tuple[list[str], str]:
+    """Pick Table 6 hashes.
+
+    The old paper command passes ``--eval-n 500``. On a smaller split that
+    request is larger than the test column, so the dataset meta eval size is
+    used. A smaller explicit count, such as a 5-hash smoke, is kept.
+    """
+    if eval_n is not None and eval_n < 1:
+        raise ValueError("eval-n must be >= 1")
+    n_test = len(sha)
+    if eval_n is None:
+        n = meta_eval_n if meta_eval_n else n_test
+        note = f"eval_n={n} from dataset meta"
+    elif meta_eval_n and eval_n > n_test:
+        n = min(int(meta_eval_n), n_test)
+        note = (
+            f"--eval-n {eval_n} is larger than {n_test} test hashes; "
+            f"using meta eval_n={n}"
+        )
+    else:
+        n = min(eval_n, n_test)
+        note = f"eval_n={n} of {n_test} test hashes"
+    return sha[: max(n, 0)], note
+
+
+def vt_job_paths(root: Path, dataset: str) -> tuple[Path, Path]:
+    """Dataset directory and a result directory that is not the EMBER jsonl folder."""
+    rel = dataset.replace("\\", "/").strip("/")
+    name = Path(rel).name
+    if name == "paper25k":
+        raise ValueError(
+            "data/paper25k was removed. Pass --dataset data/dike2500. "
+            "The EMBER reports in results/ stay untouched."
+        )
+    if name in ("", "results", ".", ".."):
+        raise ValueError(f"refusing dataset {dataset}")
+    data_dir = root / rel
+    out = root / "results" / name
+    ember_jsonl = (root / "results" / "vt_original_reports.jsonl").resolve()
+    if (out / "vt_original_reports.jsonl").resolve() == ember_jsonl:
+        raise ValueError("refusing to append the EMBER VirusTotal jsonl")
+    return data_dir, out
+
+
+def mutant_file(out: Path, sha: str) -> Path | None:
+    """Eval mutant written by the pipeline. The original PE is not a mutant."""
+    path = out / "mutants" / f"{sha}.mut.exe"
+    return path if path.is_file() else None
+
+
 def _key() -> str:
     for name in ("VT_API_KEY", "VIRUSTOTAL_API_KEY", "VT_KEY"):
         v = os.environ.get(name, "").strip()
@@ -75,8 +129,8 @@ def engine_counts(report: dict) -> dict[str, int | float]:
     """n, N from a VT file report (paper eq. 3)."""
     data = report.get("data") if isinstance(report.get("data"), dict) else report
     attrs = data.get("attributes") if isinstance(data, dict) else {}
-    stats = (attrs or {}).get("last_analysis_stats") or {}
-    results = (attrs or {}).get("last_analysis_results") or {}
+    stats = (attrs or {}).get("last_analysis_stats") or (attrs or {}).get("stats") or {}
+    results = (attrs or {}).get("last_analysis_results") or (attrs or {}).get("results") or {}
     n = int(stats.get("malicious") or 0)
     if results:
         n_res = sum(
@@ -153,6 +207,48 @@ class VirusTotalClient:
         out["size"] = len(data)
         return out
 
+    def finish_upload(self, upload: dict, timeout_s: float = 600) -> dict:
+        """Wait until a POST /files analysis has engine counts.
+
+        The upload body is an analysis id. Eq. (4) needs the same ``n`` as the
+        original hash lookup, so a completed analysis is re-read as a file report.
+        """
+        if not upload.get("ok"):
+            return upload
+        data = upload.get("data") if isinstance(upload.get("data"), dict) else {}
+        if str(data.get("type") or "") != "analysis" or not data.get("id"):
+            if "n" not in upload:
+                upload.update(engine_counts(upload))
+            return upload
+        aid = str(data["id"])
+        deadline = time.time() + timeout_s
+        last = upload
+        while True:
+            self._throttle()
+            last = _request("GET", f"{VT_API}/analyses/{aid}", headers=self._headers())
+            last["analysis_id"] = aid
+            last["path"] = upload.get("path")
+            last["size"] = upload.get("size")
+            attrs = (last.get("data") or {}).get("attributes") or {}
+            status = str(attrs.get("status") or "")
+            info = (last.get("meta") or {}).get("file_info") or {}
+            sha = str(info.get("sha256") or "")
+            if status == "completed" and len(sha) == 64:
+                report = self.report_hash(sha)
+                report["analysis_id"] = aid
+                report["path"] = upload.get("path")
+                report["size"] = upload.get("size")
+                report["upload_sha256"] = sha
+                return report
+            if status == "completed":
+                last.update(engine_counts(last))
+                return last
+            if time.time() >= deadline:
+                last["ok"] = False
+                last["error"] = "analysis_timeout"
+                last["analysis_status"] = status
+                return last
+
     def lookup_hashes(self, sha_list: list[str], dest: Path | None = None) -> dict[str, Any]:
         rows = []
         for sha in sha_list:
@@ -181,32 +277,51 @@ class VirusTotalClient:
         }
 
 
+def _span(values: list[float]) -> dict[str, float] | None:
+    if not values:
+        return None
+    return {
+        "min": float(min(values)),
+        "max": float(max(values)),
+        "mean": float(sum(values) / len(values)),
+    }
+
+
+def _report_rate(row: dict) -> float | None:
+    """Detection rate using the engine count VirusTotal returned for that report."""
+    if row.get("detection_rate") is not None:
+        return float(row["detection_rate"])
+    if row.get("N"):
+        return float(row["n"]) / float(row["N"])
+    return None
+
+
 def table6_7(orig: dict, adv: dict | None, n_engines_paper: int = 61) -> tuple[dict, dict]:
-    """Build Table 6 detection-rate and Table 7 evasive-rate summaries."""
-    o_rates = [
-        float(r["n"]) / n_engines_paper
-        for r in orig.get("rows") or []
-        if r.get("ok")
-    ]
+    """Build Table 6 detection-rate and Table 7 evasive-rate summaries.
+
+    ``detection_rate_*`` uses each report's own engine count. The ``paper_N61``
+    fields divide by 61, which passes 1.0 when a report lists more engines.
+    """
+    o_rows = [r for r in orig.get("rows") or [] if r.get("ok")]
+    o_rates = [float(r["n"]) / n_engines_paper for r in o_rows]
     table6 = {
         "n_engines_paper": n_engines_paper,
         "n_original_ok": orig.get("n_ok"),
-        "detection_rate_original": orig.get("detection_rate"),
-        "detection_rate_original_paper_N61": {
-            "min": float(min(o_rates)) if o_rates else None,
-            "max": float(max(o_rates)) if o_rates else None,
-            "mean": float(sum(o_rates) / len(o_rates)) if o_rates else None,
-        },
+        "detection_rate_original": orig.get("detection_rate") or _span(
+            [rate for r in o_rows if (rate := _report_rate(r)) is not None]
+        ),
+        "detection_rate_original_paper_N61": _span(o_rates),
     }
     table7: dict = {"status": "need_adversarial_pe"}
     if adv and adv.get("n_ok"):
-        a_rows = [r for r in adv.get("rows") or [] if r.get("ok")]
+        a_rows = [r for r in adv.get("rows") or [] if r.get("ok") and r.get("n") is not None]
         o_map = {
             r["sha256"]: r
-            for r in orig.get("rows") or []
-            if r.get("ok") and r.get("sha256")
+            for r in o_rows
+            if r.get("sha256")
         }
         ev = []
+        paired = []
         for r in a_rows:
             parent = r.get("parent_sha256") or r.get("sha256")
             o = o_map.get(parent) or o_map.get(r.get("sha256", ""))
@@ -216,19 +331,19 @@ def table6_7(orig: dict, adv: dict | None, n_engines_paper: int = 61) -> tuple[d
             n_adv = float(r["n"])
             if n_org > 0:
                 ev.append(max((n_org - n_adv) / n_org, 0.0))
-        a_rates = [float(r["n"]) / n_engines_paper for r in a_rows]
-        table6["detection_rate_adversarial_paper_N61"] = {
-            "min": float(min(a_rates)) if a_rates else None,
-            "max": float(max(a_rates)) if a_rates else None,
-            "mean": float(sum(a_rates) / len(a_rates)) if a_rates else None,
-        }
+                paired.append(r)
+        a_rates = [float(r["n"]) / n_engines_paper for r in paired]
+        real = [rate for r in paired if (rate := _report_rate(r)) is not None]
+        observed = [float(r["N"]) for r in paired if r.get("N")]
+        if real:
+            table6["detection_rate_adversarial"] = _span(real)
+        table6["detection_rate_adversarial_paper_N61"] = _span(a_rates)
         table7 = {
-            "evasion_rate": {
-                "min": float(min(ev)) if ev else None,
-                "max": float(max(ev)) if ev else None,
-                "mean": float(sum(ev) / len(ev)) if ev else None,
-            },
+            "status": "done",
+            "evasion_rate": _span(ev),
             "n_pairs": len(ev),
-            "n_engines": n_engines_paper,
+            "n_engines_paper": n_engines_paper,
         }
+        if observed:
+            table7["n_engines_observed"] = _span(observed)
     return table6, table7

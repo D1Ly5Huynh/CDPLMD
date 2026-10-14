@@ -1,10 +1,11 @@
 # Paper sources (IF-MalEvade §IV.B)
 
-Malware in the paper comes from **VirusShare + VirusTotal**. This folder stores only public metadata:
+Dataset đang dùng là PE trong `data/pe/` (2.500 độc + 100 lành, DikeDataset). Thư mục `data/paper25k/` và `data/lab2500/` đã xóa.
 
-| Path | What |
-| --- | --- |
-| `maldict/` | MalDICT behavior tags: VirusShare chunks 0–465, labeled from VirusTotal reports (ClarAVy). JSONL `{md5, ranking}`. |
-| `virusshare/` | Public MD5 lists from https://virusshare.com/hashfiles/ (no sample zips). |
+Ba kho tải thô đã xóa sau khi parse xong, vì `run_experiment.py` không đọc chúng:
 
-Import/section vectors for matching hashes are taken from EMBER raw features (VirusTotal-side static PE). Live malware PE / VirusShare torrents are not downloaded.
+- `ember/` — 3 file `.tar.bz2` (2017 v1, 2017 v2, 2018 v2)
+- `virusshare/` — catalog MD5 công khai
+- `maldict/` — tag hành vi MalDICT
+
+Muốn dựng lại jsonl từ đầu thì chạy `scripts/fetch_virusshare_vt.py`. Script tự tải lại các file đó.

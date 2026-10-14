@@ -1,0 +1,19 @@
+{
+  "pair_index": 23,
+  "sha256": "72b59644a83751eacd1779fb4fa563c98fe61e4c57cedf7d99b14243a25b8d82",
+  "orig_analysis_id": "20261009-7KCNBH",
+  "adv_analysis_id": "20261009-SDP7JI",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_windows",
+    "registry_antivm_cpu_check"
+  ],
+  "adv_signatures": [
+    "registry_antivm_cpu_check"
+  ],
+  "match": false,
+  "min_recall": 1.0
+}

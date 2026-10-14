@@ -1,0 +1,28 @@
+{
+  "pair_index": 8,
+  "sha256": "ffda06ca06f789fbd955b037808d4d34d8b4c63924c927dbb2bbd83b8d84f65b",
+  "orig_analysis_id": "20261009-4NI2TJ",
+  "adv_analysis_id": "20261009-PK1PN4",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "process_other_parent",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "process_other_parent",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

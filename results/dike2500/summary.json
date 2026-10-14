@@ -1,0 +1,158 @@
+{
+  "preset": "dike2500",
+  "source": "data/dike2500",
+  "n_features": 3523,
+  "n_train": 3400,
+  "n_test": 100,
+  "n_eval": 50,
+  "gan_last_evade_batch": 0.9654166666666667,
+  "dqn_evade_last20": 0.4,
+  "mutate_evade": 0.02,
+  "mean_turns": 49.04,
+  "table4": {
+    "RandomForest": {
+      "ODR": 1.0,
+      "ADR": 0.98,
+      "AUC": 0.99996
+    },
+    "GradientBoosting": {
+      "ODR": 1.0,
+      "ADR": 0.94,
+      "AUC": 0.9999502083333334
+    },
+    "MLP": {
+      "ODR": 1.0,
+      "ADR": 1.0,
+      "AUC": 0.9999783333333333
+    },
+    "DecisionTree": {
+      "ODR": 1.0,
+      "ADR": 1.0,
+      "AUC": 0.9999808333333333
+    }
+  },
+  "table5": {
+    "RandomForest": {
+      "ADR_before": 0.98,
+      "ADR_after": 1.0
+    },
+    "GradientBoosting": {
+      "ADR_before": 0.94,
+      "ADR_after": 1.0
+    },
+    "MLP": {
+      "ADR_before": 1.0,
+      "ADR_after": 1.0
+    },
+    "DecisionTree": {
+      "ADR_before": 1.0,
+      "ADR_after": 1.0
+    }
+  },
+  "table6": {
+    "n_engines_paper": 61,
+    "n_original_ok": 50,
+    "detection_rate_original": {
+      "min": 0.6533333333333333,
+      "max": 0.8947368421052632,
+      "mean": 0.8226270679213
+    },
+    "detection_rate_original_paper_N61": {
+      "min": 0.8032786885245902,
+      "max": 1.1475409836065573,
+      "mean": 1.0245901639344261
+    },
+    "detection_rate_adversarial": {
+      "min": 0.4533333333333333,
+      "max": 0.8533333333333334,
+      "mean": 0.7405333333333333
+    },
+    "detection_rate_adversarial_paper_N61": {
+      "min": 0.5573770491803278,
+      "max": 1.0491803278688525,
+      "mean": 0.9104918032786885
+    },
+    "status": "done",
+    "n_eval_hashes": 50
+  },
+  "table7": {
+    "status": "done",
+    "evasion_rate": {
+      "min": 0.0,
+      "max": 0.45161290322580644,
+      "mean": 0.11475451519729918
+    },
+    "n_pairs": 50,
+    "n_engines_paper": 61,
+    "n_engines_observed": {
+      "min": 75.0,
+      "max": 75.0,
+      "mean": 75.0
+    },
+    "mutant_dir": "C:\\Users\\tuonghk\\CDPLMD\\results\\dike2500\\mutants"
+  },
+  "config": {
+    "name": "dike2500",
+    "seed": 42,
+    "scale": 10,
+    "n_imports": 3269,
+    "n_sections": 254,
+    "n_malware": 2500,
+    "n_benign": 1000,
+    "n_test_malware": 100,
+    "gan_hidden": 256,
+    "gan_noise": 10,
+    "gan_epochs": 100,
+    "gan_batch": 32,
+    "gan_lr": 0.001,
+    "gan_out_bias": -4.0,
+    "gan_sparsity": 1.0,
+    "gan_max_added": 32,
+    "leaky": 0.2,
+    "dqn_h1": 256,
+    "dqn_h2": 64,
+    "gamma": 0.98,
+    "episodes": 500,
+    "max_turn": 50,
+    "dqn_lr": 0.001,
+    "epsilon_start": 1.0,
+    "epsilon_end": 0.05,
+    "buffer_size": 8000,
+    "dqn_batch": 64,
+    "warmup": 256,
+    "target_sync": 40,
+    "threshold": 0.8,
+    "eval_n": 50,
+    "retrain_frac": 0.5,
+    "mlp_hidden": 100,
+    "mlp_max_iter": 150,
+    "mlp_batch": 50,
+    "mlp_lr": 0.0003,
+    "cuckoo_enabled": true,
+    "cuckoo_url": "http://127.0.0.1:8090",
+    "cuckoo_timeout": 20,
+    "vt_enabled": true,
+    "vt_n_engines": 61,
+    "vt_rate_sleep": 15.0,
+    "out_dir": "C:\\Users\\tuonghk\\CDPLMD\\results\\dike2500",
+    "model_dir": "C:\\Users\\tuonghk\\CDPLMD\\models\\dike2500",
+    "n_features": 3523,
+    "n_actions": 7,
+    "paper_n_malware": 25000,
+    "paper_n_benign": 10000,
+    "paper_n_test_malware": 1000,
+    "paper_eval_n": 500
+  },
+  "cuckoo": {
+    "api": "http://127.0.0.1:8090",
+    "status": "online",
+    "probe": "/submit/platforms",
+    "http_status": 200,
+    "body_keys": [
+      "http_status",
+      "windows"
+    ],
+    "note": "Paper \u00a7IV: keep mutant iff Cuckoo signatures match the parent."
+  },
+  "pe_edits_skipped": 203
+}

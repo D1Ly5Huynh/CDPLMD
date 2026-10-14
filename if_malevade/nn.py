@@ -46,6 +46,7 @@ class MLP:
         leaky: float = 0.2,
         lr: float = 1e-3,
         seed: int = 0,
+        out_bias: float = 0.0,
     ) -> None:
         rng = np.random.default_rng(seed)
         self.sizes = sizes
@@ -55,9 +56,13 @@ class MLP:
         self.lr = lr
         self.W: list[np.ndarray] = []
         self.b: list[np.ndarray] = []
-        for a, c in zip(sizes[:-1], sizes[1:]):
+        pairs = list(zip(sizes[:-1], sizes[1:]))
+        for i, (a, c) in enumerate(pairs):
             self.W.append(rng.normal(0.0, np.sqrt(2.0 / a), (a, c)).astype(np.float32))
-            self.b.append(np.zeros(c, dtype=np.float32))
+            bias = np.zeros(c, dtype=np.float32)
+            if i == len(pairs) - 1 and out_bias != 0.0:
+                bias[:] = np.float32(out_bias)
+            self.b.append(bias)
         self.adam = AdamState(
             m_w=[np.zeros_like(w) for w in self.W],
             v_w=[np.zeros_like(w) for w in self.W],

@@ -15,6 +15,7 @@ venv/
 
 # Trained models
 models/*.joblib
+models/**/*.joblib
 
 # Large / local datasets (EMBER tarballs, VirusShare catalogs, jsonl dumps)
 data/sources/ember/
@@ -42,8 +43,10 @@ data/cuckoo/work/
 
 # Large experiment artifacts
 results/*.npy
+results/**/*.npy
 results/vt_original_reports.json
 results/vt_original_reports.jsonl
+results/**/vt_*.jsonl
 
 # IEEE paper PDF (copyrighted; cite DOI instead)
 A_Deep_Reinforcement_Learning_Framework*.pdf

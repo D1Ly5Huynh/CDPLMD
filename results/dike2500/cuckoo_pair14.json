@@ -1,0 +1,32 @@
+{
+  "pair_index": 14,
+  "sha256": "897154a2253fc3cd4b1c47fe261b3e6f653b12b132f319aa30e9d27418890f31",
+  "orig_analysis_id": "20261009-57GXN3",
+  "adv_analysis_id": "20261009-5GKE6Q",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "files_drops_exe_user",
+    "infostealer_browser_data",
+    "infostealer_ftp_data",
+    "registry_antivm_cpu_check",
+    "registry_checks_uninstall_keys",
+    "susevent_adjustprivilegetoken"
+  ],
+  "adv_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "files_drops_exe_user",
+    "infostealer_browser_data",
+    "infostealer_ftp_data",
+    "registry_antivm_cpu_check",
+    "registry_checks_uninstall_keys",
+    "susevent_adjustprivilegetoken"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

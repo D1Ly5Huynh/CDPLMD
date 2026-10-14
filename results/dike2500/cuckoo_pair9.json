@@ -1,0 +1,30 @@
+{
+  "pair_index": 9,
+  "sha256": "215234a0ed9b6810f440965aa23b4075b86820e4b74a3747cddbf9b1ee7d8d28",
+  "orig_analysis_id": "20261009-9XROMO",
+  "adv_analysis_id": "20261009-0CX19P",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "files_drops_exe_user",
+    "infostealer_browser_data",
+    "infostealer_ftp_data",
+    "registry_antivm_cpu_check",
+    "registry_checks_uninstall_keys",
+    "susevent_adjustprivilegetoken"
+  ],
+  "adv_signatures": [
+    "files_drops_exe_user",
+    "infostealer_browser_data",
+    "infostealer_ftp_data",
+    "registry_antivm_cpu_check",
+    "registry_checks_uninstall_keys",
+    "susevent_adjustprivilegetoken"
+  ],
+  "match": false,
+  "min_recall": 1.0
+}

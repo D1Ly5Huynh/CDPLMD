@@ -73,13 +73,24 @@ class DQNAgent:
             self.tgt.copy_from(self.q)
         return loss
 
-    def train(self, env: MalwareEnv, malware: np.ndarray, rng: np.random.Generator) -> dict:
+    def train(
+        self,
+        env: MalwareEnv,
+        malware: np.ndarray,
+        rng: np.random.Generator,
+        paths: list | None = None,
+        work_dir=None,
+        vocab: dict | None = None,
+    ) -> dict:
         cfg = self.cfg
         hist = {"return": [], "evade": [], "loss": [], "turns": []}
         for ep in tqdm(range(cfg.episodes), desc="DQN"):
             frac = ep / max(cfg.episodes - 1, 1)
             eps = cfg.epsilon_start + (cfg.epsilon_end - cfg.epsilon_start) * frac
-            sample = malware[rng.integers(0, len(malware))]
+            i = int(rng.integers(0, len(malware)))
+            sample = malware[i]
+            if paths is not None and work_dir is not None and vocab is not None:
+                env.prepare_episode(paths[i], work_dir, vocab)
             s = env.reset(sample)
             total, last_loss, evaded, turns = 0.0, 0.0, False, 0
             for _ in range(cfg.max_turn):
@@ -99,7 +110,17 @@ class DQNAgent:
             hist["turns"].append(turns)
         return hist
 
-    def mutate(self, env: MalwareEnv, sample: np.ndarray, rng: np.random.Generator) -> tuple[np.ndarray, dict]:
+    def mutate(
+        self,
+        env: MalwareEnv,
+        sample: np.ndarray,
+        rng: np.random.Generator,
+        src=None,
+        work_dir=None,
+        vocab: dict | None = None,
+    ) -> tuple[np.ndarray, dict]:
+        if src is not None and work_dir is not None and vocab is not None:
+            env.prepare_episode(src, work_dir, vocab)
         s = env.reset(sample)
         info = {"evaded": False, "turn": 0, "actions": []}
         for _ in range(self.cfg.max_turn):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import joblib
@@ -18,14 +19,45 @@ from .metrics import odr_adr, save_json
 from .vt_client import VirusTotalClient
 
 
-def run(cfg: Config, root: Path) -> dict:
+def sha_list(value) -> list[str]:
+    """Hash column from the npz. A NumPy array must not be used with ``or``."""
+    if value is None:
+        return []
+    return [str(item) for item in value]
+
+
+def assert_lab_scale(cfg: Config, y_train: np.ndarray, y_test: np.ndarray) -> None:
+    """Refuse the 25k EMBER stand-in and any other corpus size."""
+    n_mal = int((y_train == 1).sum() + (y_test == 1).sum())
+    n_ben = int((y_train == 0).sum() + (y_test == 0).sum())
+    n_test_mal = int((y_test == 1).sum())
+    n_test_ben = int((y_test == 0).sum())
+    if (
+        n_mal == cfg.n_malware
+        and n_ben == cfg.n_benign
+        and n_test_mal == cfg.n_test_malware
+        and n_test_ben == 0
+    ):
+        return
+    raise RuntimeError(
+        f"dataset has {n_mal} malware + {n_ben} benign "
+        f"(test {n_test_mal} malware / {n_test_ben} benign); "
+        f"this lab expects {cfg.n_malware} malware + {cfg.n_benign} benign, "
+        f"test {cfg.n_test_malware} malware / 0 benign. "
+        "The paper25k npz is the EMBER 25000+10000 stand-in and must not overwrite "
+        "Table 4–5. Rebuild dataset.npz from data/pe/malware and data/pe/benign."
+    )
+
+
+def run(cfg: Config, root: Path, dataset_dir: str | None = None) -> dict:
     rng = np.random.default_rng(cfg.seed)
     out = Path(cfg.out_dir)
     models = Path(cfg.model_dir)
     out.mkdir(parents=True, exist_ok=True)
     models.mkdir(parents=True, exist_ok=True)
 
-    data = load_paper_dataset(root)
+    data = load_paper_dataset(root, dataset_dir)
+    assert_lab_scale(cfg, data["y_train"], data["y_test"])
     cfg = apply_cfg_dims(cfg, data)
     source = data["source"]
 
@@ -65,22 +97,57 @@ def run(cfg: Config, root: Path) -> dict:
             "n_imports_pool": len(pools["imports"]),
             "n_sections_pool": len(pools["sections"]),
             "success_rate": pools["success_rate"],
+            "sparse_success_rate": pools["sparse_success_rate"],
             "mean_added": pools["mean_added"],
+            "mean_added_all": pools["mean_added_all"],
+            "gan_max_added": cfg.gan_max_added,
         },
     )
 
     env = MalwareEnv(cfg, rf, pools, rng)
     agent = DQNAgent(cfg, cfg.seed + 7)
-    print(f"DQN train episodes={cfg.episodes}", flush=True)
-    dqn_hist = agent.train(env, mal_tr, rng)
+    vocab_path = root / (dataset_dir or "data/paper25k") / "vocab.json"
+    vocab = json.loads(vocab_path.read_text(encoding="utf-8")) if vocab_path.is_file() else None
+    mal_dir = root / "data" / "pe" / "malware"
+    sha_tr = data.get("sha256_train")
+    train_paths = None
+    if vocab is not None and sha_tr is not None and len(sha_tr) == len(ytr):
+        mal_sha = [str(s) for s, yv in zip(sha_tr, ytr) if int(yv) == 1]
+        if len(mal_sha) == len(mal_tr):
+            cand = [mal_dir / f"{s}.exe" for s in mal_sha]
+            if all(p.is_file() for p in cand):
+                train_paths = cand
+    work = out / "pe_work"
+    print(
+        f"DQN train episodes={cfg.episodes} pe_files={train_paths is not None}",
+        flush=True,
+    )
+    if train_paths is not None:
+        dqn_hist = agent.train(env, mal_tr, rng, train_paths, work, vocab)
+    else:
+        dqn_hist = agent.train(env, mal_tr, rng)
+    if env.edit_failures:
+        print(f"pe edits skipped={env.edit_failures}", flush=True)
 
     n_eval = min(cfg.eval_n, len(mal_te))
     print(f"mutate eval_n={n_eval}", flush=True)
     orig = mal_te[:n_eval]
     adv = np.zeros_like(orig)
     mutate_log = []
+    mut_dir = out / "mutants"
+    mut_dir.mkdir(parents=True, exist_ok=True)
+    sha_te = sha_list(data.get("sha256_test"))
+    n_mut = 0
     for i in range(n_eval):
-        vec, info = agent.mutate(env, orig[i], rng)
+        src = mal_dir / f"{sha_te[i]}.exe" if vocab is not None and i < len(sha_te) else None
+        if src is not None and src.is_file():
+            vec, info = agent.mutate(env, orig[i], rng, src, work, vocab)
+            if env.pe_path is not None and Path(env.pe_path).is_file():
+                shutil.copy2(env.pe_path, mut_dir / f"{sha_te[i]}.mut.exe")
+                info["mutant"] = f"{sha_te[i]}.mut.exe"
+                n_mut += 1
+        else:
+            vec, info = agent.mutate(env, orig[i], rng)
         adv[i] = vec
         mutate_log.append(info)
 
@@ -119,11 +186,12 @@ def run(cfg: Config, root: Path) -> dict:
         "table5": table5,
         "table6": _vt_status(cfg, root, data, n_eval),
         "table7": {
-            "status": "need_adversarial_pe",
+            "status": "have_mutants" if n_mut else "need_adversarial_pe",
+            "n_mutants": n_mut,
+            "mutant_dir": str(mut_dir),
             "reason": (
-                "Eq. (4) needs orig vs mutated PE on VirusTotal. "
-                "Hash lookup of originals: scripts/vt_table67.py. "
-                "Upload mutants when PE files exist under data/pe/malware/."
+                "Eq. (4) compares VirusTotal on the original hash and the mutant PE. "
+                "Mutants are in results/.../mutants."
             ),
         },
         "config": cfg.to_dict(),
@@ -142,15 +210,17 @@ def run(cfg: Config, root: Path) -> dict:
             "Paper §IV: keep mutant iff Cuckoo signatures match the parent."
         )
     summary["cuckoo"] = cuckoo
+    summary["pe_edits_skipped"] = int(env.edit_failures)
     save_json(out / "cuckoo_status.json", cuckoo)
     save_json(out / "summary.json", summary)
+    if env._editor is not None:
+        env._editor.close()
     return summary
 
 
 def _vt_status(cfg: Config, root: Path, data: dict, n_eval: int) -> dict:
     client = VirusTotalClient(rate_sleep=cfg.vt_rate_sleep)
-    sha_arr = data.get("sha256_test")
-    sha = [str(x) for x in (sha_arr if sha_arr is not None else [])[:n_eval] if str(x)]
+    sha = sha_list(data.get("sha256_test"))[:n_eval]
     pe_dir = root / "data" / "pe" / "malware"
     n_pe = len(list(pe_dir.glob("*"))) if pe_dir.is_dir() else 0
     if not cfg.vt_enabled:
@@ -170,5 +240,8 @@ def _vt_status(cfg: Config, root: Path, data: dict, n_eval: int) -> dict:
         "n_eval_hashes": len(sha),
         "n_local_pe": n_pe,
         "n_engines_paper": cfg.vt_n_engines,
-        "cmd": "python scripts/vt_table67.py --eval-n 500",
+        "cmd": (
+            f"python scripts/vt_table67.py --dataset {data.get('source') or 'data/dike2500'} "
+            f"--eval-n {n_eval}"
+        ),
     }
