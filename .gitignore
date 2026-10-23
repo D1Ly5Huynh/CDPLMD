@@ -13,9 +13,10 @@ __pycache__/
 .venv/
 venv/
 
-# Trained models
+# Trained models outside this lab
 models/*.joblib
 models/**/*.joblib
+!models/lab_dataset/*.joblib
 
 # Large / local datasets (EMBER tarballs, VirusShare catalogs, jsonl dumps)
 data/sources/ember/
@@ -26,12 +27,15 @@ data/paper25k/*.npz
 data/paper25k/*ember*
 data/paper25k/*virusshare*
 
-# Local PE / smoke binaries
-data/pe/malware/
-data/pe/benign/
+# Local smoke binaries and disk images
 data/cuckoo/smoke/
 data/cuckoo/work/
 *.exe
+!data/pe/malware/*.exe
+!data/pe/benign/*.exe
+!results/lab_dataset/mutants/*.exe
+!results/lab_dataset/baselines/mab/*.exe
+!results/lab_dataset/baselines/malfox/*.exe
 *.dll
 *.bin
 *.iso
@@ -41,12 +45,16 @@ data/cuckoo/work/
 *.log
 *.parsed
 
-# Large experiment artifacts
+# Large experiment artifacts outside this lab
 results/*.npy
 results/**/*.npy
+!results/lab_dataset/*.npy
+!results/lab_dataset/**/*.npy
 results/vt_original_reports.json
 results/vt_original_reports.jsonl
 results/**/vt_*.jsonl
+!results/lab_dataset/vt_*.jsonl
+!results/lab_dataset/**/vt_*.jsonl
 
 # IEEE paper PDF (copyrighted; cite DOI instead)
 A_Deep_Reinforcement_Learning_Framework*.pdf
