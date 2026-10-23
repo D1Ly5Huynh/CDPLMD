@@ -1,0 +1,54 @@
+{
+  "mab": {
+    "n": 50,
+    "n_written": 50,
+    "evade": 0.7,
+    "mean_turns": 6.86,
+    "edit_failures": 9,
+    "pulls": 10,
+    "arms": [
+      "insert_import",
+      "rename_section",
+      "insert_section",
+      "section_append",
+      "upx_pack",
+      "upx_unpack",
+      "overly_append"
+    ],
+    "status": "done",
+    "adr": {
+      "RandomForest": 0.64,
+      "GradientBoosting": 0.3,
+      "MLP": 0.74,
+      "DecisionTree": 0.46
+    },
+    "blackbox": "GradientBoosting",
+    "note": "Thompson sampling tr\u00ean 7 action Table 3. Kh\u00f4ng g\u1ed3m x\u00f3a ch\u1eef k\u00fd, ph\u00e1 checksum, hay code randomization c\u1ee7a Song et al."
+  },
+  "malfox": {
+    "n": 50,
+    "n_written": 50,
+    "evade": 0.04,
+    "mean_turns": 2.96,
+    "edit_failures": 2,
+    "steps": 3,
+    "arms": [
+      "insert_import",
+      "rename_section",
+      "insert_section",
+      "section_append",
+      "upx_pack",
+      "upx_unpack",
+      "overly_append"
+    ],
+    "status": "done",
+    "adr": {
+      "RandomForest": 0.88,
+      "GradientBoosting": 0.96,
+      "MLP": 0.98,
+      "DecisionTree": 0.84
+    },
+    "blackbox": "GradientBoosting",
+    "note": "\u0110\u01b0\u1eddng t\u1ed1i \u0111a 3 action Table 3 t\u1eeb policy h\u1ecdc tr\u00ean vector. Kh\u00f4ng g\u1ed3m Obfusmal, Stealmal, Hollowmal c\u1ee7a Zhong et al."
+  }
+}

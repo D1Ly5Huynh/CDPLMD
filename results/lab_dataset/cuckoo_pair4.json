@@ -1,0 +1,36 @@
+{
+  "pair_index": 4,
+  "sha256": "c015c0871db838b7225f72b293fdb88dbcea09aa258cfb5fe18e986072e9f793",
+  "orig_analysis_id": "20261019-F2PJYF",
+  "adv_analysis_id": "20261019-SNXT7N",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "cmd_schtasks_create",
+    "executes_dropped_exe",
+    "file_drops_system32",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "susevent_setthreadcontext",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "cmd_schtasks_create",
+    "executes_dropped_exe",
+    "file_drops_system32",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "susevent_setthreadcontext",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

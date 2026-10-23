@@ -23,7 +23,7 @@ def main() -> int:
     parser.add_argument(
         "--dataset",
         default=None,
-        help="Dataset directory under CDPLMD, for example data/dike2500",
+        help="Dataset directory under CDPLMD, for example data/lab_dataset",
     )
     args = parser.parse_args()
     cfg = Config()

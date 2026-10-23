@@ -1,0 +1,34 @@
+{
+  "pair_index": 11,
+  "sha256": "fc26b253c7a3a6cc7711b511ad8e6346caf88344f1b8b5c924c9e008ecaa0c8c",
+  "orig_analysis_id": "20261019-DFJ326",
+  "adv_analysis_id": "20261019-FT8N1G",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_startup",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "susevent_setthreadcontext",
+    "warzone",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "file_drops_startup",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "susevent_setthreadcontext",
+    "warzone",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

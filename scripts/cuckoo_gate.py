@@ -29,9 +29,9 @@ from if_malevade.cuckoo_client import (  # noqa: E402
 def _eval_sha(index: int) -> str:
     import numpy as np
 
-    data = np.load(ROOT / "data" / "dike2500" / "dataset.npz", allow_pickle=True)
+    data = np.load(ROOT / "data" / "lab_dataset" / "dataset.npz", allow_pickle=True)
     column = [str(item) for item in data["sha256_test"]]
-    meta_path = ROOT / "data" / "dike2500" / "meta.json"
+    meta_path = ROOT / "data" / "lab_dataset" / "meta.json"
     limit = 50
     if meta_path.is_file():
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
@@ -46,7 +46,7 @@ def _eval_sha(index: int) -> str:
 def _run_pair(client: CuckooClient, args: argparse.Namespace) -> int:
     sha = _eval_sha(args.pair_index)
     orig = ROOT / "data" / "pe" / "malware" / f"{sha}.exe"
-    adv = ROOT / "results" / "dike2500" / "mutants" / f"{sha}.mut.exe"
+    adv = ROOT / "results" / "lab_dataset" / "mutants" / f"{sha}.mut.exe"
     health = client.health()
     print(json.dumps({"health_status": health.get("status"), "pair_index": args.pair_index}), flush=True)
     if health.get("status") != "online":
@@ -97,7 +97,7 @@ def _run_pair(client: CuckooClient, args: argparse.Namespace) -> int:
         "match": bool(finished and signatures_match(r0, r1, min_recall=1.0)),
         "min_recall": 1.0,
     }
-    out = ROOT / "results" / "dike2500" / f"cuckoo_pair{args.pair_index}.json"
+    out = ROOT / "results" / "lab_dataset" / f"cuckoo_pair{args.pair_index}.json"
     out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2), flush=True)
     return 0 if finished else 5
@@ -111,7 +111,7 @@ def main() -> int:
         "--pair-index",
         type=int,
         default=None,
-        help="Eval index: original PE plus results/dike2500/mutants/<sha>.mut.exe",
+        help="Eval index: original PE plus results/lab_dataset/mutants/<sha>.mut.exe",
     )
     parser.add_argument("--timeout", type=int, default=120, help="Guest analysis timeout in seconds")
     parser.add_argument("--poll", type=float, default=15.0)
@@ -119,7 +119,7 @@ def main() -> int:
     parser.add_argument(
         "--out",
         type=Path,
-        default=ROOT / "results" / "dike2500" / "cuckoo_smoke.json",
+        default=ROOT / "results" / "lab_dataset" / "cuckoo_smoke.json",
     )
     args = parser.parse_args()
     client = CuckooClient(timeout=30)

@@ -6,8 +6,8 @@ IF-MalEvade mutant reports stay in vt_upload_mutants.jsonl.
 This script only POSTs baselines/<method>/{sha}.mut.exe to
 https://www.virustotal.com/api/v3 and appends vt_upload_<method>.jsonl.
 
-  python scripts/vt_baselines.py --dataset data/dike2500
-  python scripts/vt_baselines.py --dataset data/dike2500 --rebuild
+  python scripts/vt_baselines.py --dataset data/lab_dataset
+  python scripts/vt_baselines.py --dataset data/lab_dataset --rebuild
 """
 
 from __future__ import annotations
@@ -203,7 +203,7 @@ def run_method(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", default="data/dike2500")
+    parser.add_argument("--dataset", default="data/lab_dataset")
     parser.add_argument("--method", choices=("mab", "malfox", "both"), default="both")
     parser.add_argument("--rebuild", action="store_true")
     args = parser.parse_args()

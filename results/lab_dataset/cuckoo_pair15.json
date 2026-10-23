@@ -1,0 +1,23 @@
+{
+  "pair_index": 15,
+  "sha256": "505968dff5e73b6db05caaa86ea34633140ec3b7bb75b19167af7ce4af641259",
+  "orig_analysis_id": "20261019-A7TBSU",
+  "adv_analysis_id": "20261019-C3P0L7",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "registry_antivm_cpu_check",
+    "susevent_setthreadcontext",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "file_drops_windows",
+    "registry_antivm_cpu_check",
+    "susevent_setthreadcontext",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

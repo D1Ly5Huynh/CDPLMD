@@ -1,0 +1,15 @@
+{
+  "status": "done",
+  "evasion_rate": {
+    "min": 0.0,
+    "max": 0.75,
+    "mean": 0.2045893725332635
+  },
+  "n_pairs": 50,
+  "n_engines_paper": 61,
+  "n_engines_observed": {
+    "min": 75.0,
+    "max": 75.0,
+    "mean": 75.0
+  }
+}

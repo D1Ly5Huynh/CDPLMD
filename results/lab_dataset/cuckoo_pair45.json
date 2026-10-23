@@ -1,0 +1,24 @@
+{
+  "pair_index": 45,
+  "sha256": "d04bccc87fc807eb78198caf6347d5ce7b4beb0fe77cbf559b6be47f9f25abb6",
+  "orig_analysis_id": "20261019-GDZS9C",
+  "adv_analysis_id": "20261019-QRE6TD",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_windows",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_write_runkey"
+  ],
+  "adv_signatures": [
+    "file_drops_windows",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_write_runkey"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

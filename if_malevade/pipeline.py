@@ -241,7 +241,7 @@ def _vt_status(cfg: Config, root: Path, data: dict, n_eval: int) -> dict:
         "n_local_pe": n_pe,
         "n_engines_paper": cfg.vt_n_engines,
         "cmd": (
-            f"python scripts/vt_table67.py --dataset {data.get('source') or 'data/dike2500'} "
+            f"python scripts/vt_table67.py --dataset {data.get('source') or 'data/lab_dataset'} "
             f"--eval-n {n_eval}"
         ),
     }

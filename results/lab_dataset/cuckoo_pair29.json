@@ -1,0 +1,23 @@
+{
+  "pair_index": 29,
+  "sha256": "a35c8c5ca4ed3ed7f351bb6fb7b2d5dfa37ebf76a6f35fcb24e7a3c70ad475c5",
+  "orig_analysis_id": "20261019-7XEYE4",
+  "adv_analysis_id": "20261019-GN16H8",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_windows",
+    "registry_antivm_cpu_check",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "file_drops_windows",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

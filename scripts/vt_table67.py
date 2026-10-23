@@ -4,12 +4,12 @@
 Originals: GET /files/{sha256} — no bytes uploaded.
 Mutants: POST only results/<dataset>/mutants/{sha}.mut.exe when --upload-pe is set.
 
-  python scripts/vt_table67.py --dataset data/dike2500 --eval-n 50
-  python scripts/vt_table67.py --eval-n 5   # smoke, still data/dike2500
+  python scripts/vt_table67.py --dataset data/lab_dataset --eval-n 50
+  python scripts/vt_table67.py --eval-n 5   # smoke, still data/lab_dataset
 
-``--eval-n 500`` is the paper size. On data/dike2500 that flag is larger than
+``--eval-n 500`` is the paper size. On data/lab_dataset that flag is larger than
 the test split, so the script uses meta.json eval_n (50) and writes under
-results/dike2500. It does not open data/paper25k or results/vt_original_reports.jsonl.
+results/lab_dataset. It does not open data/paper25k or results/vt_original_reports.jsonl.
 """
 
 from __future__ import annotations
@@ -120,7 +120,7 @@ def _rebuild(cfg: Config, dataset: str) -> int:
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--dataset", default="data/dike2500")
+    p.add_argument("--dataset", default="data/lab_dataset")
     p.add_argument(
         "--eval-n",
         type=int,

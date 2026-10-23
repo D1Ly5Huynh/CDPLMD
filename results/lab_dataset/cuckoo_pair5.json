@@ -1,0 +1,29 @@
+{
+  "pair_index": 5,
+  "sha256": "d01626fe97589cb740a48928eca456525b09bc2c49ff2b9b3bd505b21a5c67bc",
+  "orig_analysis_id": "20261019-0W7M6P",
+  "adv_analysis_id": "20261019-8X3YSJ",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "executes_dropped_exe",
+    "file_drops_startup",
+    "file_drops_system32",
+    "file_drops_windows",
+    "files_creates_shortcut",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_winlogon_persistence",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "registry_antivm_cpu_check"
+  ],
+  "match": false,
+  "min_recall": 1.0
+}

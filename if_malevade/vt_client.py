@@ -59,7 +59,7 @@ def vt_job_paths(root: Path, dataset: str) -> tuple[Path, Path]:
     name = Path(rel).name
     if name == "paper25k":
         raise ValueError(
-            "data/paper25k was removed. Pass --dataset data/dike2500. "
+            "data/paper25k was removed. Pass --dataset data/lab_dataset. "
             "The EMBER reports in results/ stay untouched."
         )
     if name in ("", "results", ".", ".."):

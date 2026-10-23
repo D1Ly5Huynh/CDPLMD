@@ -266,7 +266,7 @@ def test_pool_rejects_flooded_evasions():
     assert pools["mean_added"] == 0.0
 
 
-def test_vt_table6_stays_on_dike_eval_hashes():
+def test_vt_table6_stays_on_lab_dataset():
     root = Path(__file__).resolve().parents[1]
     sha = [f"{i:064x}" for i in range(100)]
     picked, note = select_eval_hashes(sha, 500, 50)
@@ -275,9 +275,9 @@ def test_vt_table6_stays_on_dike_eval_hashes():
     assert "meta eval_n=50" in note
     smoke, _ = select_eval_hashes(sha, 5, 50)
     assert len(smoke) == 5
-    data_dir, out = vt_job_paths(root, "data/dike2500")
-    assert data_dir == root / "data" / "dike2500"
-    assert out == root / "results" / "dike2500"
+    data_dir, out = vt_job_paths(root, "data/lab_dataset")
+    assert data_dir == root / "data" / "lab_dataset"
+    assert out == root / "results" / "lab_dataset"
     ember = root / "results" / "vt_original_reports.jsonl"
     assert (out / "vt_original_reports.jsonl") != ember
     try:
@@ -424,7 +424,7 @@ if __name__ == "__main__":
     test_vt_eq3_engine_counts()
     test_generator_starts_with_few_added_bits()
     test_pool_rejects_flooded_evasions()
-    test_vt_table6_stays_on_dike_eval_hashes()
+    test_vt_table6_stays_on_lab_dataset()
     test_sha_list_accepts_numpy_column()
     test_pe_split_matches_lab_counts()
     test_lab_scale_rejects_ember_standin()

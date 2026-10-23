@@ -1,0 +1,40 @@
+{
+  "pair_index": 32,
+  "sha256": "d0834b4e4764a7f516fc87f0d9a8fc34608e6a9d49205189e071c64b6360b310",
+  "orig_analysis_id": "20261019-IBC57H",
+  "adv_analysis_id": "20261019-8J7QXU",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "executes_dropped_exe",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_disables_regedit",
+    "registry_disables_system_restore",
+    "registry_file_extension_vis",
+    "registry_modifies_file_vis",
+    "registry_winlogon_persistence",
+    "registry_write_runkey",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "executes_dropped_exe",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_disables_regedit",
+    "registry_disables_system_restore",
+    "registry_file_extension_vis",
+    "registry_modifies_file_vis",
+    "registry_winlogon_persistence",
+    "registry_write_runkey",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Copy local Windows PE until data/pe/benign holds 1000 files.
 
-Keeps the Dike benign files already in that folder. New files are clean
-Windows executables (System32, SysWOW64, Program Files), the paper's
-benign source. Does not train and does not touch data/pe/malware.
+Files are clean Windows executables from System32, SysWOW64, and
+Program Files, the paper's benign source. Does not train and does not
+touch data/pe/malware.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BENIGN = ROOT / "data" / "pe" / "benign"
 MALWARE = ROOT / "data" / "pe" / "malware"
-MANIFEST = ROOT / "data" / "pe" / "dike_manifest.json"
+MANIFEST = ROOT / "data" / "pe" / "windows_benign.json"
 TARGET = 1000
 MAX_BYTES = 32 * 1024 * 1024
 ROOTS = (
@@ -96,8 +96,9 @@ def _walk():
 
 
 def main() -> int:
+    BENIGN.mkdir(parents=True, exist_ok=True)
     have = {path.stem.lower() for path in BENIGN.glob("*.exe")}
-    malware = {path.stem.lower() for path in MALWARE.glob("*.exe")}
+    malware = {path.stem.lower() for path in MALWARE.glob("*.exe")} if MALWARE.is_dir() else set()
     need = TARGET - len(have)
     print(f"benign {len(have)} malware {len(malware)} need {need}", flush=True)
     if need <= 0:
@@ -134,22 +135,18 @@ def main() -> int:
     if len(have) + len(added) != TARGET:
         print(f"short of {TARGET}", flush=True)
         return 1
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    known = {row["sha256"] for row in manifest.get("benign") or []}
-    for digest, _size in added:
-        if digest not in known:
-            manifest["benign"].append({"sha256": digest, "malice": 0.0})
-    manifest["n_benign"] = len(manifest["benign"])
-    manifest["n_benign_dike"] = len(have)
-    manifest["n_benign_windows"] = len(added)
+    rows = [
+        {"sha256": path.stem.lower(), "malice": 0.0, "source": "windows"}
+        for path in sorted(BENIGN.glob("*.exe"))
+    ]
+    manifest = {"benign": rows}
+    manifest["n_benign"] = len(rows)
+    manifest["n_benign_windows"] = len(manifest["benign"])
     manifest["benign_bytes"] = sum(path.stat().st_size for path in BENIGN.glob("*.exe"))
-    manifest["benign_extra_source"] = (
+    manifest["benign_source"] = (
         "local Windows PE from System32, SysWOW64, and Program Files"
     )
-    manifest["rule"] = (
-        "malware: Dike type 0 .exe, seed 42, MZ only. "
-        "benign: 100 Dike malice 0 plus local Windows PE until 1000."
-    )
+    manifest["rule"] = "1000 clean Windows PE. Paper/10 benign count. Train only."
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False), encoding="utf-8")
     print("manifest n_benign", manifest["n_benign"], flush=True)
     return 0

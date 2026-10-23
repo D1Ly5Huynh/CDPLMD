@@ -1,0 +1,36 @@
+{
+  "pair_index": 16,
+  "sha256": "d0894a5628fab64b123fddcac95568a81b0f57298ae088a3ea548122b66d5f78",
+  "orig_analysis_id": "20261019-1VWP4V",
+  "adv_analysis_id": "20261019-4JFORM",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "cmd_schtasks_create",
+    "executes_dropped_exe",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_winlogon_persistence",
+    "registry_write_runkey",
+    "susevent_adjustprivilegetoken",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "cmd_schtasks_create",
+    "executes_dropped_exe",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_winlogon_persistence",
+    "registry_write_runkey",
+    "susevent_adjustprivilegetoken",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

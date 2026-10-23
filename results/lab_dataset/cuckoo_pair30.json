@@ -1,0 +1,26 @@
+{
+  "pair_index": 30,
+  "sha256": "317516d1228ea394f4302d060a6eaa9ba0dcefef05b168492beeacf8001185ae",
+  "orig_analysis_id": "20261019-LCSUA2",
+  "adv_analysis_id": "20261019-IWCUEC",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken"
+  ],
+  "adv_signatures": [
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

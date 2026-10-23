@@ -1,0 +1,32 @@
+{
+  "pair_index": 1,
+  "sha256": "d013730419b17d74d7773d77bc6ecd473539fc1eda809e9ec64a416473d48b1f",
+  "orig_analysis_id": "20261019-PAPYGD",
+  "adv_analysis_id": "20261019-RDOSE6",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_startup",
+    "file_drops_system32",
+    "file_drops_windows",
+    "files_creates_shortcut",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken"
+  ],
+  "adv_signatures": [
+    "file_drops_startup",
+    "file_drops_system32",
+    "file_drops_windows",
+    "files_creates_shortcut",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

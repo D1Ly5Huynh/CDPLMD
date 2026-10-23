@@ -380,7 +380,7 @@ def write_paper_dataset(
 
 
 def pe_split(n_mal: int, n_ben: int, n_test: int, seed: int):
-    """Table 2 split. Same seed reproduces the dike2500 row order."""
+    """Table 2 split. Same seed reproduces the lab_dataset row order."""
     rng = np.random.default_rng(seed)
     mal_perm = rng.permutation(n_mal)
     test_idx = mal_perm[:n_test]
@@ -657,10 +657,8 @@ def write_pe_dataset(
             f"test {n_test_malware} malware / 0 benign"
         ),
         "seed": int(seed),
-        "malware_source": "data/pe/malware DikeDataset PE",
-        "benign_source": (
-            "data/pe/benign: 100 DikeDataset PE plus local Windows PE to reach 1000"
-        ),
+        "malware_source": "data/pe/malware RanDS PE",
+        "benign_source": "data/pe/benign: 1000 local Windows PE",
         "vocab": (
             "most common imports (cap 3269). Section names observed on this "
             "corpus, then standard PE names up to the paper cap 254. "
@@ -678,11 +676,14 @@ def write_pe_dataset(
     return meta
 
 
-def vectorize_pe(path: Path, vocab: dict, cfg: Config) -> np.ndarray:
+def vectorize_pe(path: Path | None, vocab: dict, cfg: Config, raw: bytes | None = None) -> np.ndarray:
     """Map a PE file onto the paper 3523-d import + section vocabulary."""
     import pefile
 
-    pe = pefile.PE(str(path), fast_load=True)
+    if raw is not None:
+        pe = pefile.PE(data=raw, fast_load=True)
+    else:
+        pe = pefile.PE(str(path), fast_load=True)
     pe.parse_data_directories(
         directories=[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_IMPORT"]]
     )

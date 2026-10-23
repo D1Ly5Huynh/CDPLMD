@@ -1,0 +1,30 @@
+{
+  "pair_index": 23,
+  "sha256": "a3a3b158817c4b81cc522dd7719d08068d6383a56dd5d0ca4c2d780207ba9077",
+  "orig_analysis_id": "20261019-QTV368",
+  "adv_analysis_id": "20261019-A450CG",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "executes_dropped_exe",
+    "file_drops_startup",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_modifies_file_vis",
+    "registry_winlogon_persistence",
+    "registry_write_runkey",
+    "susevent_setthreadcontext",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "registry_antivm_cpu_check"
+  ],
+  "match": false,
+  "min_recall": 1.0
+}

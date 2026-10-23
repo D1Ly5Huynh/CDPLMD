@@ -1,4 +1,4 @@
-"""Grouped bars: published IF-MalEvade tables next to the locked Dike lab run.
+"""Grouped bars: published IF-MalEvade tables next to the locked lab run.
 
 Numbers match IF-MalEvade-so-sanh-lab-va-paper.md. Means only.
 """
@@ -76,7 +76,7 @@ def main() -> None:
     )
     fig, axes = plt.subplots(1, 3, figsize=(12.8, 4.55), layout="constrained")
     fig.suptitle(
-        "Lab Dike và paper VirusShare",
+        "Lab và paper VirusShare",
         fontsize=15,
         fontweight="semibold",
         color=INK,

@@ -5,7 +5,7 @@ Black box is the saved Gradient Boosting detector. Edits are the seven
 Table 3 actions. Mutants go to results/<name>/baselines/{mab,malfox}/.
 This command does not call VirusTotal.
 
-  python scripts/run_baselines.py --dataset data/dike2500
+  python scripts/run_baselines.py --dataset data/lab_dataset
 """
 
 from __future__ import annotations
@@ -118,7 +118,7 @@ def rebuild_missing_mab(dataset: str) -> int:
 
 
 def main() -> int:
-    dataset = "data/dike2500"
+    dataset = "data/lab_dataset"
     args = sys.argv[1:]
     if "--dataset" in args:
         dataset = args[args.index("--dataset") + 1]

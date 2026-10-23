@@ -1,0 +1,9 @@
+{
+  "n_imports_pool": 4,
+  "n_sections_pool": 7,
+  "success_rate": 0.6179166666666667,
+  "sparse_success_rate": 0.6179166666666667,
+  "mean_added": 3.396493594066082,
+  "mean_added_all": 3.396493594066082,
+  "gan_max_added": 32
+}

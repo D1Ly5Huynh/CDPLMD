@@ -1,0 +1,26 @@
+{
+  "pair_index": 17,
+  "sha256": "34fd2f974f36114022714c00ba809d638a1aab3bc57bcd83e8463c7d68865860",
+  "orig_analysis_id": "20261019-GRW64J",
+  "adv_analysis_id": "20261019-8O3F5A",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "registry_antivm_cpu_check",
+    "registry_checks_uninstall_keys",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "file_drops_system32",
+    "file_drops_windows",
+    "registry_antivm_cpu_check",
+    "registry_checks_uninstall_keys",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

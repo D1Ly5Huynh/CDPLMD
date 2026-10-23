@@ -1,0 +1,34 @@
+{
+  "pair_index": 31,
+  "sha256": "35b56cfca5b1ab43f336d52a4f02dd90b0cb60ad6cca6fcbdb6456a1a060f591",
+  "orig_analysis_id": "20261019-TLP2RB",
+  "adv_analysis_id": "20261019-E97FB1",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "file_drops_windows",
+    "files_drops_exe_user",
+    "infostealer_browser_data",
+    "infostealer_email_clients",
+    "infostealer_ftp_data",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "susevent_setthreadcontext",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "file_drops_windows",
+    "files_drops_exe_user",
+    "infostealer_browser_data",
+    "infostealer_email_clients",
+    "infostealer_ftp_data",
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "susevent_setthreadcontext",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

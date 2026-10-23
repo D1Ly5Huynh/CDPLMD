@@ -1,0 +1,40 @@
+{
+  "pair_index": 35,
+  "sha256": "f4ca8b1b284c06c3ac650d9e2b47701cab32d3f1304bc02be4915b6657a28470",
+  "orig_analysis_id": "20261019-GB7DB8",
+  "adv_analysis_id": "20261019-VAULNJ",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "cmd_schtasks_create",
+    "executes_dropped_exe",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_antivm_ide_disks",
+    "registry_defender_realtime_prot",
+    "registry_disables_auto_update",
+    "registry_write_runkey",
+    "susevent_adjustprivilegetoken",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [
+    "cmd_schtasks_create",
+    "executes_dropped_exe",
+    "file_drops_windows",
+    "files_drops_exe_general",
+    "files_drops_exe_user",
+    "registry_antivm_cpu_check",
+    "registry_antivm_ide_disks",
+    "registry_defender_realtime_prot",
+    "registry_disables_auto_update",
+    "registry_write_runkey",
+    "susevent_adjustprivilegetoken",
+    "wrote_proc_memory"
+  ],
+  "match": true,
+  "min_recall": 1.0
+}

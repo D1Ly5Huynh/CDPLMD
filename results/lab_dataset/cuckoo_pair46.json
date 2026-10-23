@@ -1,0 +1,19 @@
+{
+  "pair_index": 46,
+  "sha256": "0d90b2123d529cf5d605cc152e1baae0e65788b6098427ab42149a76e88263f3",
+  "orig_analysis_id": "20261020-0EMQ8T",
+  "adv_analysis_id": "20261020-439Y38",
+  "orig_state": "finished",
+  "adv_state": "finished",
+  "orig_error": null,
+  "adv_error": null,
+  "orig_signatures": [
+    "registry_antivm_cpu_check",
+    "susevent_adjustprivilegetoken",
+    "susevent_setthreadcontext",
+    "wrote_proc_memory"
+  ],
+  "adv_signatures": [],
+  "match": false,
+  "min_recall": 1.0
+}

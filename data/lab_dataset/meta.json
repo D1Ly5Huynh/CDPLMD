@@ -1,0 +1,22 @@
+{
+  "n_malware": 2500,
+  "n_benign": 1000,
+  "n_features": 3523,
+  "n_imports": 3269,
+  "n_sections": 254,
+  "n_sections_observed": 254,
+  "n_sections_padded": 0,
+  "paper": "IF-MalEvade \u00a7IV.B import + section bits, Table 2 split",
+  "split": "train 2400 malware + 1000 benign; test 100 malware / 0 benign",
+  "seed": 42,
+  "malware_source": "data/pe/malware RanDS PE",
+  "benign_source": "data/pe/benign: 1000 local Windows PE",
+  "vocab": "most common imports (cap 3269). Section names observed on this corpus, then standard PE names up to the paper cap 254. Padded section columns are 0 on every row.",
+  "n_train": 3400,
+  "n_test": 100,
+  "n_train_malware": 2400,
+  "n_train_benign": 1000,
+  "n_test_malware": 100,
+  "n_test_benign": 0,
+  "eval_n": 50
+}

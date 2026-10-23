@@ -107,7 +107,7 @@ def _baseline_note(mab_vt: dict, fox_vt: dict) -> str:
 
 
 def eval_hashes(root: Path, limit: int) -> list[str]:
-    npz = root / "data" / "dike2500" / "dataset.npz"
+    npz = root / "data" / "lab_dataset" / "dataset.npz"
     if not npz.is_file():
         return []
     import numpy as np
@@ -157,7 +157,7 @@ def _pair_row(index: int, sha: str, path: Path) -> dict[str, Any]:
 
 
 def cuckoo_pairs(root: Path, hashes: list[str]) -> list[dict[str, Any]]:
-    out_dir = root / "results" / "dike2500"
+    out_dir = root / "results" / "lab_dataset"
     rows = []
     if hashes:
         for index, sha in enumerate(hashes):
@@ -180,10 +180,28 @@ def _feature_lab(meta: dict, n_features: int) -> str:
     padded = meta.get("n_sections_padded")
     if observed is not None and padded:
         text += (
-            f" {observed} tên có trong Dike, {padded} tên PE chuẩn thêm cho đủ trần paper,"
+            f" {observed} tên có trong corpus, {padded} tên PE chuẩn thêm cho đủ trần paper,"
             " các cột đó toàn 0."
         )
     return text
+
+
+def _table2_state(meta: dict) -> str:
+    """Paper Table 2 at lab scale 1/10 is a finished split, not a partial one."""
+    expected = {
+        "n_malware": 2500,
+        "n_benign": 1000,
+        "n_train_malware": 2400,
+        "n_train_benign": 1000,
+        "n_test_malware": 100,
+        "n_test_benign": 0,
+        "eval_n": 50,
+    }
+    if all(meta.get(key) == value for key, value in expected.items()):
+        return "xong"
+    if meta.get("n_malware") or meta.get("n_benign"):
+        return "mot_phan"
+    return "chua_chay"
 
 
 def _stage(
@@ -208,17 +226,20 @@ def _stage(
 
 def build_dashboard(root: Path) -> dict[str, Any]:
     root = Path(root)
-    meta = _read_json(root / "data" / "dike2500" / "meta.json") or {}
-    summary = _read_json(root / "results" / "dike2500" / "summary.json") or {}
-    table6 = summary.get("table6") if isinstance(summary.get("table6"), dict) else {}
-    table7 = summary.get("table7") if isinstance(summary.get("table7"), dict) else {}
-    pools = _read_json(root / "results" / "dike2500" / "influential_features.json") or {}
-    smoke = _read_json(root / "results" / "dike2500" / "cuckoo_smoke.json")
+    meta = _read_json(root / "data" / "lab_dataset" / "meta.json") or {}
+    summary = _read_json(root / "results" / "lab_dataset" / "summary.json") or {}
+    pools = _read_json(root / "results" / "lab_dataset" / "influential_features.json") or {}
+    smoke = _read_json(root / "results" / "lab_dataset" / "cuckoo_smoke.json")
     cfg = summary.get("config") if isinstance(summary.get("config"), dict) else {}
+
+    table6_file = _read_json(root / "results" / "lab_dataset" / "table6_engine_detection.json")
+    table7_file = _read_json(root / "results" / "lab_dataset" / "table7_evasion.json")
+    table6 = table6_file or (summary.get("table6") if isinstance(summary.get("table6"), dict) else {})
+    table7 = table7_file or (summary.get("table7") if isinstance(summary.get("table7"), dict) else {})
 
     eval_n = int(meta.get("eval_n") or summary.get("n_eval") or 50)
     hashes = eval_hashes(root, eval_n)
-    baselines_doc = _read_json(root / "results" / "dike2500" / "baselines.json") or {}
+    baselines_doc = _read_json(root / "results" / "lab_dataset" / "baselines.json") or {}
     mab_row = baselines_doc.get("mab") if isinstance(baselines_doc.get("mab"), dict) else {}
     fox_row = baselines_doc.get("malfox") if isinstance(baselines_doc.get("malfox"), dict) else {}
     mab_vt = mab_row.get("vt") if isinstance(mab_row.get("vt"), dict) else {}
@@ -228,7 +249,7 @@ def build_dashboard(root: Path) -> dict[str, Any]:
     n_miss = sum(1 for row in pairs if row["state"] == "done" and row["match"] is False)
     n_pending = sum(1 for row in pairs if row["state"] == "pending")
     next_index = next((row["index"] for row in pairs if row["state"] == "pending"), None)
-    mutant_dir = root / "results" / "dike2500" / "mutants"
+    mutant_dir = root / "results" / "lab_dataset" / "mutants"
     n_mutants = len(list(mutant_dir.glob("*.mut.exe"))) if mutant_dir.is_dir() else 0
 
     detectors = []
@@ -255,10 +276,18 @@ def build_dashboard(root: Path) -> dict[str, Any]:
     gan_done = summary.get("gan_last_evade_batch") is not None
     dqn_done = summary.get("dqn_evade_last20") is not None
     tables_done = bool(table4) and bool(table5)
-    vt_done = table6.get("status") == "done" and table7.get("status") == "done"
-    cuckoo_state = "mot_phan" if n_match or n_miss else "chua_chay"
-    if pairs and n_pending == 0 and n_miss == 0 and n_match == len(pairs):
+    vt_done = (
+        _span(table6, "detection_rate_original") is not None
+        and _span(table6, "detection_rate_adversarial") is not None
+        and _span(table7, "evasion_rate") is not None
+    )
+    n_done = sum(1 for row in pairs if row["state"] == "done")
+    if n_done == 0:
+        cuckoo_state = "chua_chay"
+    elif pairs and n_pending == 0 and n_done == len(pairs):
         cuckoo_state = "xong"
+    else:
+        cuckoo_state = "mot_phan"
 
     n_features = int(meta.get("n_features") or summary.get("n_features") or 0)
     stages = [
@@ -266,8 +295,8 @@ def build_dashboard(root: Path) -> dict[str, Any]:
             "table2",
             "Table 2",
             "Dataset",
-            "mot_phan",
-            f"{meta.get('n_malware', 2500)} malware Dike + {meta.get('n_benign', 100)} benign. Train {meta.get('n_train_malware', 2400)}+{meta.get('n_train_benign', 100)}, test {meta.get('n_test_malware', 100)}.",
+            _table2_state(meta),
+            f"{meta.get('n_malware', 2500)} malware RanDS + {meta.get('n_benign', 1000)} benign. Train {meta.get('n_train_malware', 2400)}+{meta.get('n_train_benign', 1000)}, test {meta.get('n_test_malware', 100)}.",
             f"{PAPER['n_malware']} malware VirusShare + {PAPER['n_benign']} benign. Test {PAPER['n_test_malware']}.",
             "#dataset",
         ),
@@ -346,7 +375,7 @@ def build_dashboard(root: Path) -> dict[str, Any]:
             "§IV",
             "Cổng chữ ký Cuckoo",
             cuckoo_state,
-            f"Khớp {n_match}, lệch {n_miss}, chưa chạy {n_pending}. min_recall 1.0.",
+            f"Đã chạy {n_done}/{len(pairs)}. Khớp {n_match}, lệch {n_miss}. min_recall 1.0.",
             "Giữ mutant khi mọi signature của mẫu gốc còn trên mutant.",
             "#cuckoo",
         ),
@@ -368,8 +397,8 @@ def build_dashboard(root: Path) -> dict[str, Any]:
     ]
 
     return {
-        "preset": summary.get("preset") or "dike2500",
-        "source": summary.get("source") or "data/dike2500",
+        "preset": summary.get("preset") or "lab_dataset",
+        "source": summary.get("source") or "data/lab_dataset",
         "paper_doi": "10.1109/ACCESS.2023.3334645",
         "stages": stages,
         "corpus": {
@@ -385,7 +414,7 @@ def build_dashboard(root: Path) -> dict[str, Any]:
             "n_sections_observed": meta.get("n_sections_observed"),
             "n_sections_padded": meta.get("n_sections_padded"),
             "seed": meta.get("seed"),
-            "family": "DikeDataset trojan/generic",
+            "family": "RanDS ransomware",
             "paper_family": PAPER["family"],
             "paper_n_malware": PAPER["n_malware"],
             "paper_n_benign": PAPER["n_benign"],

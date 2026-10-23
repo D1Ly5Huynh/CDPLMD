@@ -1,0 +1,24 @@
+{
+  "n_engines_paper": 61,
+  "n_original_ok": 50,
+  "detection_rate_original": {
+    "min": 0.5844155844155844,
+    "max": 0.9078947368421053,
+    "mean": 0.7680974186868923
+  },
+  "detection_rate_original_paper_N61": {
+    "min": 0.7377049180327869,
+    "max": 1.1311475409836065,
+    "mean": 0.9547540983606558
+  },
+  "detection_rate_adversarial": {
+    "min": 0.18666666666666668,
+    "max": 0.88,
+    "mean": 0.6237333333333334
+  },
+  "detection_rate_adversarial_paper_N61": {
+    "min": 0.22950819672131148,
+    "max": 1.0819672131147542,
+    "mean": 0.7668852459016393
+  }
+}
